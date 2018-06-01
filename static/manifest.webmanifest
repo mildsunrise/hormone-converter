@@ -1,0 +1,16 @@
+{
+  "name": "Conversor hormonas",
+  "short_name": "Hormonas",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#2196F3",
+  "theme_color": "#2196F3",
+  "description": "Un conversor sencillo de niveles de hormonas",
+  "icons": [{
+    "src": "icon.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  }],
+  "lang": "es-ES",
+  "scope": "."
+}

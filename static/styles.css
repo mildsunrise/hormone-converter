@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,700');
+
+*:focus {
+    outline: none;
+}
+
+html, head, body {
+  margin: 0;
+  height: 100%;
+  background-color: #2196F3;
+
+  color: #ffffff;
+  font: 1.00em 'Roboto', sans-serif;
+}
+
+#container {
+  width: 100%;
+  min-height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  user-select: none;
+}
+
+#container input {
+  user-select: auto;
+}
+
+.converter {
+  width: 25em;
+  padding: 3em 1.5em 5em;
+}
+
+.converter h1, .converter p {
+  font-size: 2.5em;
+  font-weight: 300;
+  margin: 0.3em 0;
+  text-align: center;
+}
+
+.converter p {
+  font-size: 1.15em;
+}
+
+.converter .boxes {
+  display: flex;
+  margin: 1.5em 0em;
+}
+
+.converter .boxes > .textbox {
+  flex: 1;
+  min-width: 10em;
+  display: flex;
+  background-color: #ffffff;
+  border-radius: .3em;
+}
+
+.converter .boxes > .separator {
+  font-weight: 700;
+  font-size: 2.2em;
+  line-height: 0.7;
+  margin: 0.5em;
+  align-self: center;
+}
+
+.converter .textbox form {
+  flex-grow: 1;
+  display: flex;
+  align-items: stretch;
+}
+
+.converter .textbox input {
+  width: 100%;
+}
+
+.converter .textbox input, .converter .textbox .unit {
+  background-color: transparent;
+  color: #000000;
+  font: inherit;
+  font-size: 1.35em;
+  font-weight: 700;
+  padding: 0.7em 0.7em;
+  margin: 0;
+  border: none;
+}
+
+.converter .textbox .unit {
+  font-size: 1em;
+  font-weight: 400;
+  cursor: pointer;
+  padding-left: 0;
+}
+
+.converter .textbox .unit.empty {
+  display: none;
+}
+.converter .textbox .unit.guessed {
+  color: #777;
+}
+
+@media (max-width: 26em) {
+  .converter .boxes {
+    display: block;
+  }
+
+  .converter .boxes > .separator {
+    display: none;
+  }
+
+  .converter .boxes > .textbox {
+    margin: 1.2em auto;
+    max-width: 11.5em;
+  }
+}
