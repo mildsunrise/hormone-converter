@@ -31,22 +31,22 @@ defaultUnit = PgMl
 
 -- MODEL
 
-type alias TextboxModel =
+type alias Model =
   { text : String, value : Maybe Float, unit : Maybe EstradiolUnit, unitSet : Bool }
 
-textboxModel : TextboxModel
-textboxModel = { text = "", value = Nothing, unit = Nothing, unitSet = False }
+model : Model
+model = { text = "", value = Nothing, unit = Nothing, unitSet = False }
 
 -- UPDATE
 
-type TextboxMessage =
+type Message =
   -- HTML messages
   Submit | Input String | UnitAction |
   -- External control messages
   SetValue Float EstradiolUnit | SetUnit EstradiolUnit
 
-textboxUpdate : TextboxMessage -> TextboxModel -> TextboxModel
-textboxUpdate msg model = case msg of
+update : Message -> Model -> Model
+update msg model = case msg of
 
   Input text ->
     -- Remove any stored value, store new text and guess unit if needed
@@ -75,19 +75,19 @@ textboxUpdate msg model = case msg of
 
 -- EXTERNAL METHODS
 
-trySetValue : TextboxModel -> Maybe TextboxModel
+trySetValue : Model -> Maybe Model
 trySetValue model =
   parseNumber model.text |> andThen (\value -> let
     unit = withDefault defaultUnit model.unit
   in Just { model | value = Just value, unit = Just unit, unitSet = True })
 
-getValue : TextboxModel -> Maybe (Float, EstradiolUnit)
+getValue : Model -> Maybe (Float, EstradiolUnit)
 getValue model = Maybe.map2 (,) model.value model.unit
 
 -- VIEW
 
-textboxView : TextboxModel -> Html TextboxMessage
-textboxView model =
+view : Model -> Html Message
+view model =
   div [ class "textbox" ]
     [ form [ onSubmit Submit ]
       [ input [ onInput Input, value model.text, type_ "text", size 5,
@@ -97,7 +97,7 @@ textboxView model =
     , unitButton model
     ]
 
-unitButton : TextboxModel -> Html TextboxMessage
+unitButton : Model -> Html Message
 unitButton model = let
     label = case model.unit of
       Just unit -> case unit of

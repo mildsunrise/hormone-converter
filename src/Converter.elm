@@ -6,12 +6,12 @@ import Textbox exposing (..)
 
 -- MODEL
 
-type alias Model = { a : TextboxModel, b : TextboxModel }
+type alias Model = { a : Textbox.Model, b : Textbox.Model }
 
 model : Model
-model = { a = textboxModel, b = textboxModel }
+model = { a = Textbox.model, b = Textbox.model }
 
-getAccessors : Bool -> ( (Model -> TextboxModel), ((TextboxModel -> TextboxModel) -> Model -> Model) )
+getAccessors : Bool -> ( (Model -> Textbox.Model), ((Textbox.Model -> Textbox.Model) -> Model -> Model) )
 getAccessors which = case which of
   False -> ( .a, (\f model -> { model | a = f model.a }) )
   True -> ( .b, (\f model -> { model | b = f model.b }) )
@@ -19,7 +19,7 @@ getAccessors which = case which of
 -- UPDATE
 
 type Message =
-  Textbox Bool TextboxMessage
+  Textbox Bool Textbox.Message
 
 update : Message -> Model -> Model
 update msg model = case msg of
@@ -29,17 +29,17 @@ update msg model = case msg of
       (other, mapOther) = getAccessors (not which)
     in
       -- Forward message to corresponding textbox
-      mapThis (textboxUpdate msg) model |>
+      mapThis (Textbox.update msg) model |>
       -- Then, if textbox has a value, set it (converted) on the other
       (\model -> case getValue (this model) of
         Just (value, unit) -> let
             (value2, unit2) = calculateEquivalence value unit
-          in mapOther (textboxUpdate <| SetValue value2 unit2) model
+          in mapOther (Textbox.update <| SetValue value2 unit2) model
         Nothing -> model ) |>
       -- If we're displaying same units on both textboxes, switch the other one
       (\model -> case Maybe.map2 (,) (this model).unit (other model).unit of
         Just (unit, _) ->
-          mapOther (textboxUpdate <| SetUnit <| reverseUnit unit) model
+          mapOther (Textbox.update <| SetUnit <| reverseUnit unit) model
         Nothing -> model )
 
 -- VIEW
@@ -53,9 +53,9 @@ view model =
 Introduce la cantidad que quieras convertir en la caja de abajo.
         """ ]
       , div [ class "boxes" ]
-        [ Html.map (Textbox False) <| textboxView model.a
+        [ Html.map (Textbox False) <| Textbox.view model.a
         , span [ class "separator" ] [ text "=" ]
-        , Html.map (Textbox True) <| textboxView model.b
+        , Html.map (Textbox True) <| Textbox.view model.b
         ]
       ]
     ]
