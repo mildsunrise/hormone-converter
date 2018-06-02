@@ -1,4 +1,4 @@
-var CACHE = 'v3';
+var CACHE = 'v4';
 
 self.addEventListener('install', function(evt) {
   evt.waitUntil(precache());
@@ -11,7 +11,13 @@ function precache() {
       './manifest.webmanifest',
       './assets/styles.css',
       './assets/main.js',
-      './assets/icon.png'
+      './assets/icon.png',
+      './assets/fonts/roboto-v18-latin-300.woff',
+      './assets/fonts/roboto-v18-latin-300.woff2',
+      './assets/fonts/roboto-v18-latin-700.woff',
+      './assets/fonts/roboto-v18-latin-700.woff2',
+      './assets/fonts/roboto-v18-latin-regular.woff',
+      './assets/fonts/roboto-v18-latin-regular.woff2'
     ]);
   });
 }
@@ -24,16 +30,7 @@ function fromCache(request) {
   return caches.open(CACHE).then(function (cache) {
     return cache.match(request).then(function (matching) {
       if (matching) return matching;
-      /* if */ return update(request);
       return "no-match";
-    });
-  });
-}
-
-function update(request) {
-  return caches.open(CACHE).then(function (cache) {
-    return fetch(request).then(function (response) {
-      return cache.put(request, response);
     });
   });
 }
