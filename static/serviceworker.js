@@ -1,4 +1,4 @@
-var CACHE = 'v1';
+var CACHE = 'v2';
 
 self.addEventListener('install', function(evt) {
   evt.waitUntil(precache());
@@ -7,6 +7,7 @@ self.addEventListener('install', function(evt) {
 function precache() {
   return caches.open(CACHE).then(function (cache) {
     return cache.addAll([
+      './',
       './index.html',
       './manifest.webmanifest',
       './styles.css',
@@ -22,6 +23,18 @@ self.addEventListener('fetch', function(evt) {
 
 function fromCache(request) {
   return caches.open(CACHE).then(function (cache) {
-    return cache.match(request);
+    return cache.match(request).then(function (matching) {
+      if (matching) return matching;
+      /* if */ return update(request);
+      return "no-match";
+    });
+  });
+}
+
+function update(request) {
+  return caches.open(CACHE).then(function (cache) {
+    return fetch(request).then(function (response) {
+      return cache.put(request, response);
+    });
   });
 }
