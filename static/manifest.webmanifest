@@ -7,7 +7,7 @@
   "theme_color": "#2196F3",
   "description": "Un conversor sencillo de niveles de hormonas",
   "icons": [{
-    "src": "icon.png",
+    "src": "assets/icon.png",
     "sizes": "192x192",
     "type": "image/png"
   }],

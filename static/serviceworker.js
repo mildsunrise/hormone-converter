@@ -1,4 +1,4 @@
-var CACHE = 'v2';
+var CACHE = 'v3';
 
 self.addEventListener('install', function(evt) {
   evt.waitUntil(precache());
@@ -8,11 +8,10 @@ function precache() {
   return caches.open(CACHE).then(function (cache) {
     return cache.addAll([
       './',
-      './index.html',
       './manifest.webmanifest',
-      './styles.css',
-      './icon.png',
-      './main.js'
+      './assets/styles.css',
+      './assets/main.js',
+      './assets/icon.png'
     ]);
   });
 }
