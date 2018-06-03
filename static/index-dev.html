@@ -18,6 +18,22 @@
         while (document.body.firstChild) {
             document.body.removeChild(document.body.firstChild);
         }
-        runElmProgram();
+        var app = runElmProgram();
+        var observer = new MutationObserver(function(mutations) {
+          var plot = document.querySelector(".converter .plot");
+          if (!plot) return;
+          observer.disconnect();
+
+          var width;
+          function updateWidth() {
+            plot = document.querySelector(".converter .plot");
+            if (width === plot.clientWidth) return;
+            width = plot.clientWidth;
+            app.ports.viewWidths.send(width);
+          }
+          updateWidth();
+          window.addEventListener("resize", updateWidth);
+        });
+        observer.observe(document.body, { subtree: true, attributes: true });
     </script>
 </html>
