@@ -68,6 +68,6 @@ Introduce la cantidad que quieras convertir en la caja de abajo.
         , span [ class "separator" ] [ text "=" ]
         , Html.map (Textbox True) <| Textbox.view model.b
         ]
-      , Html.map Plot <| Plot.view model.plot
+      , div [ class "plot" ] [ Html.map Plot <| Plot.view model.plot ]
       ]
     ]

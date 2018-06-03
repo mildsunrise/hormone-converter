@@ -127,6 +127,12 @@ html, head, body {
   color: #777;
 }
 
+.converter .plot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 @media (max-width: 26em) {
   .converter .boxes {
     display: block;
