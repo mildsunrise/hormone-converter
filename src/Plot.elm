@@ -1,45 +1,23 @@
-module Plot exposing (..)
+module Plot exposing (view, actualView)
 
 import Svg exposing (..)
 import Svg.Attributes exposing (fill, rx, ry, textAnchor, class, d, transform, stroke, strokeWidth, strokeLinecap, strokeLinejoin)
 import Html exposing (Html)
-import Html.Events exposing (on)
-import Json.Encode
-import Json.Decode
 import Unit exposing (EstradiolUnit, convert, unitLabel, defaultUnit)
 width = toString >> Svg.Attributes.width
 height = toString >> Svg.Attributes.height
 x = toString >> Svg.Attributes.x
 y = toString >> Svg.Attributes.y
 
--- MODEL
+view : Maybe Float -> Maybe (Float, EstradiolUnit) -> Html msg
+view viewWidth value = svg [ height 75 ] <| case viewWidth of
+  Nothing -> []
+  Just viewWidth -> actualView viewWidth value
 
-type alias Model = { width: Maybe Float, value : Maybe (Float, EstradiolUnit) }
+actualView : Float -> Maybe (Float, EstradiolUnit) -> List (Svg msg)
+actualView viewWidth value = let
 
-model : Model
-model = { width = Just 400, value = Nothing }
-
--- MESSAGE
-
-type Message =
-  WidthChanged Float | SetValue (Maybe (Float, EstradiolUnit))
-
-update : Message -> Model -> Model
-update msg model = case msg of
-  WidthChanged width -> { model | width = Just width }
-  SetValue value -> { model | value = value }
-
--- VIEW
-
-view : Model -> Html Message
-view model = case model.width of
-  Nothing -> Html.span [] []
-  Just viewWidth -> actualView viewWidth model
-
-actualView : Float -> Model -> Html Message
-actualView viewWidth model = let
-
-    unit = model.value |> Maybe.map Tuple.second |> Maybe.withDefault defaultUnit
+    unit = value |> Maybe.map Tuple.second |> Maybe.withDefault defaultUnit
 
     lowerBound = -5
     upperBound = 160
@@ -75,22 +53,22 @@ actualView viewWidth model = let
     indicator pos = if pos > (mapI <| viewWidth - 10)
       then overflowIndicator else valueIndicator pos
 
-  in svg [ height 75, width viewWidth ] <|
-    [ g [ class "bar" ]
-      [ rect [ x 0, width viewWidth, y (30-4), height 20,
-          rx "10", ry "10", fill "#fff", class "bg" ] []
-      , barRectX 0 6 lowerBound 40 [ fill "#c74900", rx "6", ry "6" ]
-      , barRectX -6 0 110 upperBound [ fill "#00c700", rx "6", ry "6" ]
-      , barRect 40 80 [ fill "#a3a800" ]
-      , barRect 80 110 [ fill "#2ae600" ]
-      ]
-    , text_ [ x (viewWidth/2), y 68, textAnchor "middle",
-        fill "#fff", class "unit-label" ] [ text <| unitLabel unit ]
-    , g [ class "labels" ] <| List.map label labels
-    , (case model.value of
-       Nothing -> g [] []
-       Just (value, unit) -> indicator (convert unit value defaultUnit))
+  in
+  [ g [ class "bar" ]
+    [ rect [ x 0, width viewWidth, y (30-4), height 20,
+        rx "10", ry "10", fill "#fff", class "bg" ] []
+    , barRectX 0 6 lowerBound 40 [ fill "#c74900", rx "6", ry "6" ]
+    , barRectX -6 0 110 upperBound [ fill "#00c700", rx "6", ry "6" ]
+    , barRect 40 80 [ fill "#a3a800" ]
+    , barRect 80 110 [ fill "#2ae600" ]
     ]
+  , text_ [ x (viewWidth/2), y 68, textAnchor "middle",
+      fill "#fff", class "unit-label" ] [ text <| unitLabel unit ]
+  , g [ class "labels" ] <| List.map label labels
+  , (case value of
+     Nothing -> g [] []
+     Just (value, unit) -> indicator (convert unit value defaultUnit))
+  ]
 
 translate x y =
   transform <| "translate(" ++ (toString x) ++ " " ++ (toString y) ++ ")"

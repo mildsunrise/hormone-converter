@@ -133,6 +133,10 @@ html, head, body {
   justify-content: center;
 }
 
+.converter .plot svg {
+  width: 100%;
+}
+
 @media (max-width: 26em) {
   .converter .boxes {
     display: block;
