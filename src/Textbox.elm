@@ -5,32 +5,8 @@ import Html.Attributes exposing (attribute, href, value, class, classList, type_
 import Html.Events exposing (onInput, onSubmit, onClick)
 import Maybe exposing (andThen, withDefault)
 import Utils exposing (fallback, parseNumber, formatNumber)
+import Unit exposing (EstradiolUnit, defaultUnit, reverseUnit, guessUnit, unitLabel)
 (=>) = (,)
-
--- ESTRADIOL
-
-type EstradiolUnit = PmolL | PgMl
-
-guessUnit : String -> Maybe EstradiolUnit
-guessUnit text = let
-    guess n = if n < 0 || n > 1000 then Nothing else
-      Just (if n < 130 then PgMl else PmolL)
-  in parseNumber text |> Maybe.andThen guess
-
-reverseUnit : EstradiolUnit -> EstradiolUnit
-reverseUnit unit = case unit of
-  PmolL -> PgMl
-  PgMl -> PmolL
-
-unitMultiplier : EstradiolUnit -> Float
-unitMultiplier unit = case unit of
-  PmolL -> 3.671
-  PgMl -> 1
-
-convert : EstradiolUnit -> Float -> EstradiolUnit -> Float
-convert unit n tunit = n / (unitMultiplier unit) * (unitMultiplier tunit)
-
-defaultUnit = PgMl
 
 -- MODEL
 
@@ -76,13 +52,13 @@ update msg model = case msg of
   SetUnit unit ->
     { model | unit = Just unit }
 
--- EXTERNAL METHODS
-
 trySetValue : Model -> Maybe Model
 trySetValue model =
   parseNumber model.text |> andThen (\value -> let
     unit = withDefault defaultUnit model.unit
   in Just { model | value = Just value, unit = Just unit, unitSet = True })
+
+-- EXTERNAL METHODS
 
 getValue : Model -> Maybe (Float, EstradiolUnit)
 getValue model = Maybe.map2 (,) model.value model.unit
@@ -103,9 +79,7 @@ view model =
 unitButton : Model -> Html Message
 unitButton model = let
     label = case model.unit of
-      Just unit -> case unit of
-        PmolL -> "pmol/L"
-        PgMl -> "pg/mL"
+      Just unit -> unitLabel unit
       Nothing -> ""
     className = if model.unit == Nothing then "empty" else
       if model.unitSet then "set" else "guessed"

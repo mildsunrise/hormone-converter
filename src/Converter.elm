@@ -2,7 +2,8 @@ module Converter exposing (..)
 
 import Html exposing (Html, text, div, h1, p, span)
 import Html.Attributes exposing (attribute, href, value, class, classList, type_, size)
-import Textbox exposing (..)
+import Unit exposing (convert, reverseUnit)
+import Textbox exposing (getValue, Message(SetValue, SetUnit))
 
 -- MODEL
 
