@@ -22,10 +22,13 @@ reverseUnit unit = case unit of
   PmolL -> PgMl
   PgMl -> PmolL
 
-calculateEquivalence : Float -> EstradiolUnit -> (Float, EstradiolUnit)
-calculateEquivalence n unit = case unit of
-  PmolL -> (n / 3.671, PgMl)
-  PgMl -> (n * 3.671, PmolL)
+unitMultiplier : EstradiolUnit -> Float
+unitMultiplier unit = case unit of
+  PmolL -> 3.671
+  PgMl -> 1
+
+convert : EstradiolUnit -> Float -> EstradiolUnit -> Float
+convert unit n tunit = n / (unitMultiplier unit) * (unitMultiplier tunit)
 
 defaultUnit = PgMl
 

@@ -23,24 +23,27 @@ type Message =
 
 update : Message -> Model -> Model
 update msg model = case msg of
-  Textbox which msg ->
-    let
-      (this, mapThis) = getAccessors which
-      (other, mapOther) = getAccessors (not which)
-    in
-      -- Forward message to corresponding textbox
-      mapThis (Textbox.update msg) model |>
-      -- Then, if textbox has a value, set it (converted) on the other
-      (\model -> case getValue (this model) of
-        Just (value, unit) -> let
-            (value2, unit2) = calculateEquivalence value unit
-          in mapOther (Textbox.update <| SetValue value2 unit2) model
-        Nothing -> model ) |>
-      -- If we're displaying same units on both textboxes, switch the other one
-      (\model -> case Maybe.map2 (,) (this model).unit (other model).unit of
-        Just (unit, _) ->
-          mapOther (Textbox.update <| SetUnit <| reverseUnit unit) model
-        Nothing -> model )
+  Textbox which msg -> updateTextbox which msg model
+
+updateTextbox : Bool -> Textbox.Message -> Model -> Model
+updateTextbox which msg model = let
+    (this, mapThis) = getAccessors which
+    (other, mapOther) = getAccessors (not which)
+  in
+    -- Forward message to corresponding textbox
+    mapThis (Textbox.update msg) model |>
+    -- Then, if textbox has a value, set it (converted) on the other and plot
+    (\model -> case getValue (this model) of
+      Just (value, unit) -> let
+          unit2 = reverseUnit unit
+          value2 = convert unit value unit2
+        in mapOther (Textbox.update <| SetValue value2 unit2) model
+      Nothing -> model ) |>
+    -- If we're displaying same units on both textboxes, switch the other one
+    (\model -> case Maybe.map2 (,) (this model).unit (other model).unit of
+      Just (unit, _) ->
+        mapOther (Textbox.update <| SetUnit <| reverseUnit unit) model
+      Nothing -> model )
 
 -- VIEW
 
