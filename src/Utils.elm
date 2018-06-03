@@ -15,3 +15,6 @@ fallback : Maybe a -> Maybe a -> Maybe a
 fallback base new = case new of
   Nothing -> base
   Just _ -> new
+
+filterNegative : comparable -> Maybe comparable
+filterNegative n = if n < 0 then Nothing else Just n

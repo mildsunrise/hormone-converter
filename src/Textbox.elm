@@ -4,7 +4,7 @@ import Html exposing (Html, text, form, input, div, button)
 import Html.Attributes exposing (attribute, href, value, class, classList, type_, size)
 import Html.Events exposing (onInput, onSubmit, onClick)
 import Maybe exposing (andThen, withDefault)
-import Utils exposing (fallback, parseNumber, formatNumber)
+import Utils exposing (fallback, parseNumber, formatNumber, filterNegative)
 import Unit exposing (EstradiolUnit, defaultUnit, reverseUnit, guessUnit, unitLabel)
 (=>) = (,)
 
@@ -54,7 +54,7 @@ update msg model = case msg of
 
 trySetValue : Model -> Maybe Model
 trySetValue model =
-  parseNumber model.text |> andThen (\value -> let
+  parseNumber model.text |> andThen filterNegative |> andThen (\value -> let
     unit = withDefault defaultUnit model.unit
   in Just { model | value = Just value, unit = Just unit, unitSet = True })
 

@@ -28,9 +28,19 @@ self.addEventListener('fetch', function(evt) {
 
 function fromCache(request) {
   return caches.open(CACHE).then(function (cache) {
-    return cache.match(request).then(function (matching) {
+    return cache.match(request, {ignoreSearch: true}).then(function (matching) {
       if (matching) return matching;
       return "no-match";
     });
   });
 }
+
+self.addEventListener('activate', function(event) {
+  event.waitUntil(
+    caches.keys().then(function(keyList) {
+      return Promise.all(keyList.map(function(key) {
+        if (key !== CACHE) return caches.delete(key);
+      }));
+    })
+  );
+});

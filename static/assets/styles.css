@@ -28,7 +28,7 @@
 
 
 *:focus {
-    outline: none;
+  outline: none;
 }
 
 html, head, body {
@@ -57,7 +57,7 @@ html, head, body {
 
 .converter {
   width: 25em;
-  padding: 3em 1.5em 5em;
+  padding: 2em 1.5em 4em;
 }
 
 .converter h1, .converter p {
