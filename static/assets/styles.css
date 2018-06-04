@@ -49,10 +49,16 @@ html, head, body {
   justify-content: center;
 
   user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
 }
 
 #container input {
   user-select: auto;
+  -ms-user-select: auto;
+  -moz-user-select: auto;
+  -webkit-user-select: auto;
 }
 
 .converter {
