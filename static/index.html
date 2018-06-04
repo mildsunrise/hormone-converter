@@ -30,22 +30,28 @@
     <script type="text/javascript" src="assets/main.js"></script>
     <script type="text/javascript">
         var app = Elm.Main.embed(document.body);
-        var observer = new MutationObserver(function(mutations) {
-          var plot = document.querySelector(".converter .plot");
-          if (!plot) return;
-          observer.disconnect();
-
-          var width;
-          function updateWidth() {
-            plot = document.querySelector(".converter .plot");
-            if (width === plot.clientWidth) return;
-            width = plot.clientWidth;
-            app.ports.viewWidths.send(width);
-          }
-          updateWidth();
+        var plot = document.querySelector(".converter .plot");
+        var width;
+        function updateWidth() {
+          plot = document.querySelector(".converter .plot");
+          if (!plot || width === plot.clientWidth) return;
+          width = plot.clientWidth;
+          app.ports.viewWidths.send(width);
+        }
+        if (plot) {
           window.addEventListener("resize", updateWidth);
-        });
-        observer.observe(document.body, { subtree: true, attributes: true });
+          updateWidth();
+        } else {
+          var timeout = setTimeout(updateWidth, 100);
+          var observer = new MutationObserver(function(mutations) {
+            var plot = document.querySelector(".converter .plot");
+            if (!plot) return;
+            observer.disconnect();
+            window.addEventListener("resize", updateWidth);
+            updateWidth();
+          });
+          observer.observe(document.body, { subtree: true, attributes: true });
+        }
 
         if ('serviceWorker' in navigator)
             navigator.serviceWorker.register('serviceworker.js');
