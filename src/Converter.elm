@@ -1,55 +1,55 @@
 module Converter exposing (..)
 
-import Html exposing (Html, text, div, h1, p, span)
+import Html exposing (Html, text, div, h1, p, span, a)
 import Html.Attributes exposing (attribute, href, value, class, classList, type_, size)
-import Unit exposing (EstradiolUnit, convert, reverseUnit)
+import Html.Events exposing (onClick)
+import Utils exposing (formatNumber)
+import Unit exposing (EstradiolUnit, convert, reverseUnit, unitLabel)
 import Textbox exposing (getValue, Message(SetValue, SetUnit))
 import Plot
 
 -- MODEL
 
 type alias Model = {
-  a : Textbox.Model, b : Textbox.Model,
-  plot : Maybe (Float, EstradiolUnit), width : Maybe Float }
+  textbox : Textbox.Model,
+  value : Maybe (Float, EstradiolUnit),
+  targetUnit : Maybe EstradiolUnit,
+  width : Maybe Float }
 
 model : Model
-model = { a = Textbox.model, b = Textbox.model, plot = Nothing, width = Nothing }
-
-getAccessors : Bool -> ( (Model -> Textbox.Model), ((Textbox.Model -> Textbox.Model) -> Model -> Model) )
-getAccessors which = case which of
-  False -> ( .a, (\f model -> { model | a = f model.a }) )
-  True -> ( .b, (\f model -> { model | b = f model.b }) )
+model = { textbox = Textbox.model, value = Nothing, targetUnit = Nothing, width = Nothing }
 
 -- UPDATE
 
 type Message =
-  Textbox Bool Textbox.Message | SetWidth Float
+  Textbox Textbox.Message | Reverse | SetWidth Float
 
 update : Message -> Model -> Model
 update msg model = case msg of
-  Textbox which msg -> updateTextbox which msg model
+  Textbox msg ->
+    -- Forward message to textbox
+    { model | textbox = Textbox.update msg model.textbox }
+    -- If a value was set, update value and targetUnit
+    |> (\model -> case getValue model.textbox of
+      Just (value, unit) ->
+        { model | value = Just (value, unit), targetUnit = Just (reverseUnit unit) }
+      Nothing -> model
+    )
+  Reverse ->
+    -- Set textbox and value to the converted value, and targetUnit to original
+    convertedValue model |> Maybe.map (\(value, unit) ->
+      { model | textbox = Textbox.update (SetValue value unit) model.textbox,
+        value = Just (value, unit),
+        targetUnit = model.value |> Maybe.map Tuple.second }
+    ) |>
+    -- If no converted value was set, do nothing
+    Maybe.withDefault model
   SetWidth width -> { model | width = Just width }
 
-updateTextbox : Bool -> Textbox.Message -> Model -> Model
-updateTextbox which msg model = let
-    (this, mapThis) = getAccessors which
-    (other, mapOther) = getAccessors (not which)
-  in
-    -- Forward message to corresponding textbox
-    mapThis (Textbox.update msg) model |>
-    -- Then, if textbox has a value, set it (converted) on the other and plot
-    (\model -> case getValue (this model) of
-      Just (value, unit) -> let
-          unit2 = reverseUnit unit
-          value2 = convert unit value unit2
-        in mapOther (Textbox.update <| SetValue value2 unit2) model |>
-           (\model -> { model | plot = Just (value2, unit2) })
-      Nothing -> model ) |>
-    -- If we're displaying same units on both textboxes, switch the other one
-    (\model -> case Maybe.map2 (,) (this model).unit (other model).unit of
-      Just (unit, _) ->
-        mapOther (Textbox.update <| SetUnit <| reverseUnit unit) model
-      Nothing -> model )
+convertedValue : Model -> Maybe (Float, EstradiolUnit)
+convertedValue model = let
+    f (value, unit) unit2 = (convert unit value unit2, unit2)
+  in Maybe.map2 f model.value model.targetUnit
 
 -- VIEW
 
@@ -62,10 +62,24 @@ view model =
 Introduce la cantidad que quieras convertir en la caja de abajo.
         """ ]
       , div [ class "boxes" ]
-        [ Html.map (Textbox False) <| Textbox.view model.a
-        , span [ class "separator" ] [ text "=" ]
-        , Html.map (Textbox True) <| Textbox.view model.b
+        [ Html.map Textbox <| Textbox.view model.textbox
+        , a [ class "separator", onClick Reverse ] [ text "⇆" ]
+        , outputView model
         ]
-      , div [ class "plot" ] [ Plot.view model.width model.plot ]
+      , div [ class "plot" ] [ Plot.view model.width <| convertedValue model ]
+      ]
+    ]
+
+outputView : Model -> Html Message
+outputView model = let
+    value = case convertedValue model of
+      Just (value, unit) -> formatNumber value
+      Nothing -> ""
+    unit = model.targetUnit |> Maybe.map unitLabel |> Maybe.withDefault ""
+  in div [ class "output" ]
+    [ span []
+      [ span [ class "value" ] [ text value ]
+      , text " "
+      , span [ class "unit" ] [ text unit ]
       ]
     ]

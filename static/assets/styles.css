@@ -79,7 +79,8 @@ html, head, body {
 
 .converter .boxes {
   display: flex;
-  margin: 1.5em 0em;
+  margin: 2.5em 0em;
+  align-items: center;
 }
 
 .converter .boxes > .textbox {
@@ -91,11 +92,12 @@ html, head, body {
 }
 
 .converter .boxes > .separator {
-  font-weight: 700;
-  font-size: 2.2em;
+  font-size: 1.6em;
   line-height: 0.7;
-  margin: 0.5em;
-  align-self: center;
+  padding: 0.7em;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 
 .converter .textbox form {
@@ -114,7 +116,7 @@ html, head, body {
   font: inherit;
   font-size: 1.35em;
   font-weight: 700;
-  padding: 0.7em 0.7em;
+  padding: 0.83em 0.7em;
   margin: 0;
   border: none;
 }
@@ -143,17 +145,55 @@ html, head, body {
   width: 100%;
 }
 
+.converter .textbox .unit.set {
+  position:  relative;
+}
+
+.converter .textbox .unit.set:before {
+  content: "⏷"; /* ⏶ */
+  display: inline-block;
+  position: absolute;
+  bottom: 0;
+  right: 50%;
+  font-size: .85em;
+}
+
+.converter .boxes > .output {
+  font-weight: 300;
+  font-size: 1.25em;
+  min-width: 9em;
+  display: flex;
+  justify-content: flex-end;
+  text-align: right;
+  overflow: hidden;
+
+  user-select: text;
+  -ms-user-select: text;
+  -moz-user-select: text;
+  -webkit-user-select: text;
+}
+
+.converter .boxes > .output > span {
+  font-size: 1.35em;
+}
+
+.converter .boxes > .output .unit {
+  font-size: .815em;
+  padding-left: 0.15em;
+}
+
 @media (max-width: 26em) {
   .converter .boxes {
-    display: block;
+    flex-direction: column;
   }
 
-  .converter .boxes > .separator {
-    display: none;
+  .converter .boxes > .output {
+    text-align: center;
+    justify-content: center;
   }
 
   .converter .boxes > .textbox {
-    margin: 1.2em auto;
-    max-width: 11.5em;
+    width: 11.5em;
+    margin: 0.2em 0;
   }
 }
