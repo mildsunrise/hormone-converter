@@ -1,12 +1,13 @@
 module Converter exposing (..)
 
 import Html exposing (Html, text, div, h1, p, span, a)
-import Html.Attributes exposing (attribute, href, value, class, classList, type_, size)
+import Html.Attributes exposing (attribute, href, value, class, classList, style, type_, size)
 import Html.Events exposing (onClick)
 import Utils exposing (formatNumber)
 import Unit exposing (EstradiolUnit, convert, reverseUnit, unitLabel)
 import Textbox exposing (getValue, Message(SetValue, SetUnit))
 import Plot
+(=>) = (,)
 
 -- MODEL
 
@@ -63,12 +64,18 @@ Introduce la cantidad que quieras convertir en la caja de abajo.
         """ ]
       , div [ class "boxes" ]
         [ Html.map Textbox <| Textbox.view model.textbox
-        , a [ class "separator", onClick Reverse ] [ text "⇆" ]
+        , outputSeparator model
         , outputView model
         ]
       , div [ class "plot" ] [ Plot.view model.width <| convertedValue model ]
       ]
     ]
+
+outputSeparator : Model -> Html Message
+outputSeparator model = let
+    visibility = if convertedValue model == Nothing then "hidden" else "visible"
+    styles = [ "visibility" => visibility ]
+  in a [ class "separator", onClick Reverse, style styles ] [ text "⇆" ]
 
 outputView : Model -> Html Message
 outputView model = let
