@@ -70,7 +70,7 @@ view model =
   div [ class "textbox" ]
     [ form [ onSubmit Submit ]
       [ input [ onInput Input, value model.text, type_ "text", size 5,
-                attribute "inputmode" "numeric",
+                attribute "inputmode" "numeric", attribute "autofocus" "1",
                 attribute "pattern" " *[0-9.,e-]+ *" ] []
       ]
     , unitButton model

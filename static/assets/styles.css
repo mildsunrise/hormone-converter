@@ -150,7 +150,7 @@ html, head, body {
 }
 
 .converter .textbox .unit.set:before {
-  content: "⏷"; /* ⏶ */
+  content: "▾";
   display: inline-block;
   position: absolute;
   bottom: 0;
